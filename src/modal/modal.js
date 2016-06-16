@@ -103,8 +103,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
 /**
  * A helper directive for the $modal service. It creates a backdrop element.
  */
-  .directive('uibModalBackdrop', ['$animate', '$injector', '$uibModalStack',
-  function($animate, $injector, $modalStack) {
+  .directive('uibModalBackdrop', ['$animate', '$uibModalStack',
+  function($animate, $modalStack) {
     return {
       restrict: 'A',
       compile: function(tElement, tAttrs) {
@@ -129,8 +129,8 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
     }
   }])
 
-  .directive('uibModalWindow', ['$uibModalStack', '$q', '$animateCss', '$document',
-  function($modalStack, $q, $animateCss, $document) {
+  .directive('uibModalWindow', ['$uibModalStack', '$q', '$animate', '$document',
+  function($modalStack, $q, $animate, $document) {
     return {
       scope: {
         index: '@'
@@ -174,15 +174,12 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
           var animationPromise = null;
 
           if (attrs.modalInClass) {
-            animationPromise = $animateCss(element, {
-              addClass: attrs.modalInClass
-            }).start();
+            animationPromise = $animate.addClass(element, attrs.modalInClass);
 
             scope.$on($modalStack.NOW_CLOSING_EVENT, function(e, setIsAsync) {
               var done = setIsAsync();
-              $animateCss(element, {
-                removeClass: attrs.modalInClass
-              }).start().then(done);
+              $animate.removeClass(element, attrs.modalInClass)
+                .then(done);
             });
           }
 
@@ -241,9 +238,9 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
     };
   })
 
-  .factory('$uibModalStack', ['$animate', '$animateCss', '$document',
+  .factory('$uibModalStack', ['$animate', '$document',
     '$compile', '$rootScope', '$q', '$$multiMap', '$$stackedMap', '$uibPosition',
-    function($animate, $animateCss, $document, $compile, $rootScope, $q, $$multiMap, $$stackedMap, $uibPosition) {
+    function($animate, $document, $compile, $rootScope, $q, $$multiMap, $$stackedMap, $uibPosition) {
       var OPENED_MODAL_CLASS = 'modal-open';
 
       var backdropDomEl, backdropScope;
